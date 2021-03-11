@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+
+    tools:context=".activity.AddNotes">
+
+    <Toolbar
+        android:id="@+id/toolbar_add"
+        android:title="@string/add"
+        android:navigationIcon="@drawable/ic_arrow_back"
+        android:titleTextColor="@color/orange_pink_light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:targetApi="m" />
+
+    <EditText
+        android:id="@+id/et_title"
+        android:hint="@string/title"
+        android:textColorHint="@color/dark_gray"
+        android:textSize="20sp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/et_desc"
+            android:hint="@string/note"
+            android:textColorHint="@color/light_gray"
+            android:gravity="start"
+            android:padding="12dp"
+            android:background="@drawable/edit_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
+</LinearLayout>
