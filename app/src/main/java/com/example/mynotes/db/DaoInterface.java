@@ -7,19 +7,20 @@ import java.util.List;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
 @Dao
 public interface DaoInterface {
 
-    @Query("select * from allNotes")
+    @Query("select * from allNotes order by _id desc")
     List<Notes> fetchAllNotes();
 
-    @Insert
-    void insertNote(Notes note);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertNote(Notes note);
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateNote(Notes note);
 
     @Delete

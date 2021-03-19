@@ -3,4 +3,13 @@
     <string name="add">Add New Note</string>
     <string name="title">Title</string>
     <string name="note">Note</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit Note</string>
+    <string name="share">Share Note</string>
+    <string name="layout">Layout</string>
+    <string name="sort">Sort By</string>
+    <string name="created">Created Date</string>
+    <string name="modified">Modified Date</string>
+    <string name="fontSize">Font Size</string>
+    <string name="search">Search</string>
 </resources>

@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyNotes">
         <activity android:name=".activity.AddNotes"/>
+        <activity android:name=".activity.EditNotes"/>
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

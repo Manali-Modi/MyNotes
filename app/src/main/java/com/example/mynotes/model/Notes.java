@@ -1,5 +1,10 @@
 package com.example.mynotes.model;
 
+import android.annotation.SuppressLint;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -16,9 +21,17 @@ public class Notes {
     @ColumnInfo(name = "description")
     private String description;
 
-    public Notes(String title, String description) {
+    @ColumnInfo(name = "created_date_time")
+    private String createdDateTime;
+
+    @ColumnInfo(name = "modified_date_time")
+    private String modifiedDateTime;
+
+    public Notes(String title, String description, String createdDateTime, String modifiedDateTime) {
         this.title = title;
         this.description = description;
+        this.createdDateTime = createdDateTime;
+        this.modifiedDateTime = modifiedDateTime;
     }
 
     public int get_id() {
@@ -43,5 +56,29 @@ public class Notes {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(String dateTime) {
+        this.createdDateTime = dateTime;
+    }
+
+    public String getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(String modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String getDateTime() {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(modifiedDateTime));
+        return formatter.format(calendar.getTime());
     }
 }
