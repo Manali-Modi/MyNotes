@@ -2,12 +2,16 @@ package com.example.mynotes.model;
 
 import android.annotation.SuppressLint;
 
+import com.example.mynotes.db.ToListConverter;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 @Entity(tableName = "allNotes")
 public class Notes {
@@ -27,11 +31,21 @@ public class Notes {
     @ColumnInfo(name = "modified_date_time")
     private String modifiedDateTime;
 
-    public Notes(String title, String description, String createdDateTime, String modifiedDateTime) {
+    @TypeConverters(ToListConverter.class)
+    @ColumnInfo(name = "item_text")
+    private List<String> itemText;
+
+    @TypeConverters(ToListConverter.class)
+    @ColumnInfo(name = "is_checked")
+    private List<Boolean> checkBoxValue;
+
+    public Notes(String title, String description, String createdDateTime, String modifiedDateTime, List<String> itemText, List<Boolean> checkBoxValue) {
         this.title = title;
         this.description = description;
         this.createdDateTime = createdDateTime;
         this.modifiedDateTime = modifiedDateTime;
+        this.itemText = itemText;
+        this.checkBoxValue = checkBoxValue;
     }
 
     public int get_id() {
@@ -72,6 +86,22 @@ public class Notes {
 
     public void setModifiedDateTime(String modifiedDateTime) {
         this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public List<String> getItemText() {
+        return itemText;
+    }
+
+    public void setItemText(List<String> itemText) {
+        this.itemText = itemText;
+    }
+
+    public List<Boolean> getCheckBoxValue() {
+        return checkBoxValue;
+    }
+
+    public void setCheckBoxValue(List<Boolean> checkBoxValue) {
+        this.checkBoxValue = checkBoxValue;
     }
 
     public String getDateTime() {

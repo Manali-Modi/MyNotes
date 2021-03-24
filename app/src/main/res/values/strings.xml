@@ -12,4 +12,5 @@
     <string name="modified">Modified Date</string>
     <string name="fontSize">Font Size</string>
     <string name="search">Search</string>
+    <string name="item">Add List Item</string>
 </resources>

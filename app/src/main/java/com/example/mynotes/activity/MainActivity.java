@@ -19,6 +19,7 @@ import com.example.mynotes.interfaces.RecViewClickInterface;
 import com.example.mynotes.model.Notes;
 import com.example.mynotes.viewmodel.NotesViewModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +37,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-public class MainActivity extends AppCompatActivity implements RecViewClickInterface {
+public class MainActivity extends AppCompatActivity implements RecViewClickInterface{
 
     public static final int SMALL_SIZE = 16, MEDIUM_SIZE = 20, LARGE_SIZE = 24;
     NotesAdapter adapter;
@@ -200,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                Toast.makeText(MainActivity.this,"Move",Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -234,6 +236,8 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
         intent.putExtra("title", note.getTitle());
         intent.putExtra("desc", note.getDescription());
         intent.putExtra("dateTime", note.getCreatedDateTime());
+        intent.putExtra("list", (Serializable) note.getItemText());
+        intent.putExtra("check", (Serializable) note.getCheckBoxValue());
         intent.putExtra("size", flag_size);
         startActivity(intent);
     }

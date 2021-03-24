@@ -8,19 +8,32 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.mynotes.R;
+import com.example.mynotes.adapter.ItemsAdapter;
 import com.example.mynotes.databinding.ActivityAddNotesBinding;
+import com.example.mynotes.interfaces.ItemClickInterface;
 import com.example.mynotes.model.Notes;
 import com.example.mynotes.viewmodel.NotesViewModel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class AddNotes extends AppCompatActivity {
+public class AddNotes extends AppCompatActivity implements ItemClickInterface {
 
     ActivityAddNotesBinding binding;
     NotesViewModel viewModel;
     int flagSize, textSize;
     InputMethodManager imm;
+    ItemsAdapter itemsAdapter;
+    List<String> items = new ArrayList<>();
+    List<Boolean> checkValue = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +45,15 @@ public class AddNotes extends AppCompatActivity {
         assert imm != null;
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
+        itemsAdapter = new ItemsAdapter(this,items, checkValue,this);
+
         flagSize = getIntent().getExtras().getInt("size");
-        if (flagSize == 0)
-            textSize = MainActivity.SMALL_SIZE;
+        if (flagSize == 2)
+            textSize = MainActivity.LARGE_SIZE;
         else if (flagSize == 1)
             textSize = MainActivity.MEDIUM_SIZE;
         else
-            textSize = MainActivity.LARGE_SIZE;
+            textSize = MainActivity.SMALL_SIZE;
 
         binding.etTitle.setTextSize(textSize);
         binding.etDesc.setTextSize(textSize);
@@ -47,13 +62,34 @@ public class AddNotes extends AppCompatActivity {
         binding.toolbarAdd.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 saveData();
+            }
+        });
+
+        setRecViewItems();
+        addItems();
+    }
+
+    private void addItems() {
+        binding.imgAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                items.add("");
+                checkValue.add(false);
+                itemsAdapter.notifyItemInserted(items.size()-1);
             }
         });
     }
 
+    private void setRecViewItems() {
+        binding.recItems.setLayoutManager(new LinearLayoutManager(AddNotes.this));
+        binding.recItems.setAdapter(itemsAdapter);
+    }
+
     @Override
     public void onBackPressed() {
+        binding.etDesc.requestFocus();
         saveData();
     }
 
@@ -70,9 +106,26 @@ public class AddNotes extends AppCompatActivity {
         } else if (desc.length() == 0) {
             Toast.makeText(AddNotes.this, "Set the note description", Toast.LENGTH_SHORT).show();
         } else {
-            Notes note = new Notes(title, desc, dateTime, dateTime);
+            Notes note = new Notes(title, desc, dateTime, dateTime, itemsAdapter.itemsList, itemsAdapter.checkBoxValue);
             viewModel.insertNotesData(note);
             startActivity(new Intent(AddNotes.this, MainActivity.class));
         }
+    }
+
+    @Override
+    public void setOnDragClick() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                Collections.swap(itemsAdapter.itemsList,viewHolder.getAdapterPosition(),target.getAdapterPosition());
+                itemsAdapter.notifyItemMoved(viewHolder.getAdapterPosition(),target.getAdapterPosition());
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        }).attachToRecyclerView(binding.recItems);
     }
 }
