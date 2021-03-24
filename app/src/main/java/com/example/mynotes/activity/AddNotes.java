@@ -45,7 +45,7 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
         assert imm != null;
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
-        itemsAdapter = new ItemsAdapter(this,items, checkValue,this);
+        itemsAdapter = new ItemsAdapter(this, items, checkValue, this);
 
         flagSize = getIntent().getExtras().getInt("size");
         if (flagSize == 2)
@@ -77,7 +77,7 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
             public void onClick(View view) {
                 items.add("");
                 checkValue.add(false);
-                itemsAdapter.notifyItemInserted(items.size()-1);
+                itemsAdapter.notifyItemInserted(items.size() - 1);
             }
         });
     }
@@ -117,8 +117,8 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                Collections.swap(itemsAdapter.itemsList,viewHolder.getAdapterPosition(),target.getAdapterPosition());
-                itemsAdapter.notifyItemMoved(viewHolder.getAdapterPosition(),target.getAdapterPosition());
+                Collections.swap(itemsAdapter.itemsList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                itemsAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return false;
             }
 
