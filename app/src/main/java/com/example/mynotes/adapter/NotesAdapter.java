@@ -6,7 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.example.mynotes.R;
+import com.example.mynotes.activity.MainActivity;
 import com.example.mynotes.databinding.NotesRowBinding;
 import com.example.mynotes.interfaces.RecViewClickInterface;
 import com.example.mynotes.model.Notes;
@@ -23,6 +26,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
 
     public List<Notes> notes;
     List<Notes> notesList;
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
+
     private final Filter noteFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
@@ -71,6 +76,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
 
     @Override
     public void onBindViewHolder(@NonNull NotesAdapter.NotesHolder holder, int position) {
+        viewBinderHelper.setOpenOnlyOne(true);
+        viewBinderHelper.bind(holder.getBinding().swipeLayout, String.valueOf(notes.get(position).get_id()));
+        viewBinderHelper.closeLayout(String.valueOf(notes.get(position).get_id()));
         holder.getBinding().setVariable(com.example.mynotes.BR.my_note, notes.get(position));
         holder.getBinding().executePendingBindings();
         holder.getBinding().txtTitle.setTextSize(textSize);
@@ -116,10 +124,25 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
             binding = DataBindingUtil.bind(itemView);
 
             assert binding != null;
-            binding.crdNotes.setOnClickListener(new View.OnClickListener() {
+            binding.crdNotes.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    clickInterface.setOnItemLongClick();
+                    return false;
+                }
+            });
+
+            binding.txtEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    clickInterface.setOnItemClick(getAdapterPosition(), notes.get(getAdapterPosition()), (CardView) view);
+                    clickInterface.setOnEditClick(getAdapterPosition(), notes.get(getAdapterPosition()));
+                }
+            });
+
+            binding.txtDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickInterface.setOnDeleteClick(getAdapterPosition());
                 }
             });
         }

@@ -6,5 +6,9 @@ import androidx.cardview.widget.CardView;
 
 public interface RecViewClickInterface {
 
-    void setOnItemClick(int pos, Notes notes, CardView view);
+    void setOnItemLongClick();
+
+    void setOnEditClick(int pos, Notes notes);
+
+    void setOnDeleteClick(int pos);
 }

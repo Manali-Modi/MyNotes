@@ -4,6 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorSpace;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -36,6 +42,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.room.ColumnInfo;
 
 public class MainActivity extends AppCompatActivity implements RecViewClickInterface{
 
@@ -48,7 +55,9 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
     SharedPreferences.Editor editor;
     MenuItem menuItemLayout;
     List<Notes> allNotes;
-    int spanCount, flag_sort, flag_size;
+    public static int spanCount;
+    int flag_sort, flag_size;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
         preferences = getSharedPreferences("saveSpanCount", MODE_PRIVATE);
         editor = preferences.edit();
         cardViews = new ArrayList<>();
-
         binding.fabAddNotes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
 
         setMenuAndRecView();
         fillData();
-        swipeToDelete();
     }
 
     private void setMenuAndRecView() {
@@ -197,39 +204,38 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
         });
     }
 
-    private void swipeToDelete() {
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        editor.putInt("spanCount", spanCount);
+        editor.putInt("sort", flag_sort);
+        editor.putInt("size", flag_size);
+        editor.apply();
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finishAffinity();
+    }
+
+    @Override
+    public void setOnItemLongClick() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                Toast.makeText(MainActivity.this,"Move",Toast.LENGTH_SHORT).show();
+                Collections.swap(adapter.notes, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-                        .setMessage("Are you sure to delete this note?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                int position = viewHolder.getAdapterPosition();
-                                viewModel.deleteNotesData(adapter.getData(position));
-                                adapter.removeData(position);
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                builder.create().show();
             }
         }).attachToRecyclerView(binding.recNotes);
     }
 
     @Override
-    public void setOnItemClick(int pos, Notes note, CardView view) {
+    public void setOnEditClick(int pos, Notes note) {
         Intent intent = new Intent(MainActivity.this, EditNotes.class);
         intent.putExtra("position", pos);
         intent.putExtra("id", note.get_id());
@@ -243,16 +249,8 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        editor.putInt("spanCount", spanCount);
-        editor.putInt("sort", flag_sort);
-        editor.putInt("size", flag_size);
-        editor.apply();
-    }
-
-    @Override
-    public void onBackPressed() {
-        this.finishAffinity();
+    public void setOnDeleteClick(int position) {
+        viewModel.deleteNotesData(adapter.getData(position));
+        adapter.removeData(position);
     }
 }
