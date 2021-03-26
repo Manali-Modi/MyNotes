@@ -1,15 +1,8 @@
 package com.example.mynotes.activity;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorSpace;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -42,11 +35,11 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import androidx.room.ColumnInfo;
 
-public class MainActivity extends AppCompatActivity implements RecViewClickInterface{
+public class MainActivity extends AppCompatActivity implements RecViewClickInterface {
 
     public static final int SMALL_SIZE = 16, MEDIUM_SIZE = 20, LARGE_SIZE = 24;
+    public static int spanCount;
     NotesAdapter adapter;
     NotesViewModel viewModel;
     ActivityMainBinding binding;
@@ -55,9 +48,8 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
     SharedPreferences.Editor editor;
     MenuItem menuItemLayout;
     List<Notes> allNotes;
-    public static int spanCount;
     int flag_sort, flag_size;
-
+    NotesAdapter.NotesHolder holder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,15 +213,34 @@ public class MainActivity extends AppCompatActivity implements RecViewClickInter
     @Override
     public void setOnItemLongClick() {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                if(viewHolder!=null){
+                    holder = (NotesAdapter.NotesHolder) viewHolder;
+                    holder.getBinding().crdNotes.setRotation(-5.0f);
+                    holder.getBinding().crdNotes.setElevation(15.0f);
+                }
+            }
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 Collections.swap(adapter.notes, viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 adapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                return false;
+                return true;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                holder = (NotesAdapter.NotesHolder) viewHolder;
+                holder.getBinding().crdNotes.setRotation(0f);
+                holder.getBinding().crdNotes.setElevation(3.0f);
             }
         }).attachToRecyclerView(binding.recNotes);
     }

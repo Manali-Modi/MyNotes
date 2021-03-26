@@ -1,10 +1,12 @@
 package com.example.mynotes.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
+import android.widget.Toast;
 
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
@@ -83,6 +85,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
         holder.getBinding().executePendingBindings();
         holder.getBinding().txtTitle.setTextSize(textSize);
         holder.getBinding().txtDesc.setTextSize(textSize);
+        holder.getBinding().crdNotes.setRotation(0f);
     }
 
     @Override
@@ -127,8 +130,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
             binding.crdNotes.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
+                    //binding.crdNotes.setBackgroundColor(ctx.getResources().getColor(R.color.orange_pink_dark));
                     clickInterface.setOnItemLongClick();
-                    return false;
+                    return true;
                 }
             });
 
