@@ -3,7 +3,6 @@ package com.example.mynotes.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -17,6 +16,7 @@ import com.example.mynotes.viewmodel.NotesViewModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,7 +38,7 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
         binding = DataBindingUtil.setContentView(AddNotes.this, R.layout.activity_add_notes);
         binding.etTitle.requestFocus();
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -47,7 +47,7 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
 
         itemsAdapter = new ItemsAdapter(this, items, checkValue, this);
 
-        flagSize = getIntent().getExtras().getInt("size");
+        flagSize = getIntent().getIntExtra("size", 0);
         if (flagSize == 2)
             textSize = MainActivity.LARGE_SIZE;
         else if (flagSize == 1)
@@ -59,12 +59,9 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
         binding.etDesc.setTextSize(textSize);
         viewModel = new NotesViewModel(getApplication());
 
-        binding.toolbarAdd.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                saveData();
-            }
+        binding.toolbarAdd.setNavigationOnClickListener(view -> {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            saveData();
         });
 
         setRecViewItems();
@@ -72,13 +69,10 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
     }
 
     private void addItems() {
-        binding.imgAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                items.add("");
-                checkValue.add(false);
-                itemsAdapter.notifyItemInserted(items.size() - 1);
-            }
+        binding.imgAdd.setOnClickListener(view -> {
+            items.add("");
+            checkValue.add(false);
+            itemsAdapter.notifyItemInserted(items.size() - 1);
         });
     }
 
@@ -118,6 +112,7 @@ public class AddNotes extends AppCompatActivity implements ItemClickInterface {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 Collections.swap(itemsAdapter.itemsList, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+                Collections.swap(itemsAdapter.checkBoxValue, viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 itemsAdapter.notifyItemMoved(viewHolder.getAdapterPosition(), target.getAdapterPosition());
                 return false;
             }

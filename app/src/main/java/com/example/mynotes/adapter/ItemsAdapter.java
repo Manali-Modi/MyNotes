@@ -3,32 +3,26 @@ package com.example.mynotes.adapter;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.mynotes.R;
 import com.example.mynotes.databinding.ListItemsBinding;
 import com.example.mynotes.interfaces.ItemClickInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemsHolder> {
 
-    Context ctx;
     public List<String> itemsList;
-    ItemClickInterface clickInterface;
     public List<Boolean> checkBoxValue;
+    Context ctx;
+    ItemClickInterface clickInterface;
 
     public ItemsAdapter(Context ctx, List<String> itemsList, List<Boolean> checkBoxValue, ItemClickInterface clickInterface) {
         this.ctx = ctx;
@@ -40,7 +34,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemsHolder>
     @NonNull
     @Override
     public ItemsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemsHolder(LayoutInflater.from(ctx).inflate(R.layout.list_items,null));
+        return new ItemsHolder(LayoutInflater.from(ctx).inflate(R.layout.list_items, null));
     }
 
     @Override
@@ -49,46 +43,32 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemsHolder>
         holder.getBinding().etList.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                itemsList.set(position,editable.toString());
+                itemsList.set(position, editable.toString());
             }
         });
         holder.getBinding().etList.setText(itemsList.get(position));
-        holder.getBinding().imgDrag.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                holder.getBinding().etList.clearFocus();
-                Toast.makeText(ctx,"To drag items",Toast.LENGTH_SHORT).show();
-                clickInterface.setOnDragClick();
-                return false;
-            }
+        holder.getBinding().imgDrag.setOnLongClickListener(view -> {
+            holder.getBinding().etList.clearFocus();
+            clickInterface.setOnDragClick();
+
+            return false;
         });
-        holder.getBinding().imgClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                itemsList.remove(position);
-                checkBoxValue.remove(position);
-                Log.d("check",checkBoxValue.toString());
-                notifyDataSetChanged();
-            }
+        holder.getBinding().imgClose.setOnClickListener(view -> {
+            itemsList.remove(position);
+            checkBoxValue.remove(position);
+            notifyDataSetChanged();
         });
-        holder.getBinding().chkList.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                checkBoxValue.set(position,b);
-            }
-        });
+        holder.getBinding().chkList.setOnCheckedChangeListener((compoundButton, b) -> checkBoxValue.set(position, b));
         boolean isChecked = checkBoxValue.get(position);
-        if(isChecked)
+        if (isChecked)
             holder.getBinding().chkList.setChecked(true);
     }
 
@@ -97,15 +77,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemsHolder>
         return itemsList.size();
     }
 
-    public class ItemsHolder extends RecyclerView.ViewHolder {
-        private ListItemsBinding binding;
+    public static class ItemsHolder extends RecyclerView.ViewHolder {
+        private final ListItemsBinding binding;
 
         public ItemsHolder(@NonNull View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
         }
 
-        public ListItemsBinding getBinding(){
+        public ListItemsBinding getBinding() {
             return binding;
         }
     }

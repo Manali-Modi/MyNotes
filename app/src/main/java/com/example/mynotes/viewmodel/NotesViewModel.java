@@ -1,5 +1,6 @@
 package com.example.mynotes.viewmodel;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.AsyncTask;
 
@@ -18,12 +19,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+@SuppressLint("StaticFieldLeak")
 public class NotesViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<Notes>> notesMutableLiveData = new MutableLiveData<>();
-    public LiveData<List<Notes>> noteLiveData = notesMutableLiveData;
-
     private final AppRoomDatabase appRoomDatabase;
+    public LiveData<List<Notes>> noteLiveData = notesMutableLiveData;
 
     public NotesViewModel(@NonNull Application application) {
         super(application);
@@ -84,7 +85,7 @@ public class NotesViewModel extends AndroidViewModel {
                 notesList = new ArrayList<>();
             }
             notesList.add(notes);
-            notesMutableLiveData.setValue(notesList);
+            notesMutableLiveData.postValue(notesList);
         }
     }
 

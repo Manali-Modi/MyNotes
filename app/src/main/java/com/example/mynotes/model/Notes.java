@@ -23,21 +23,21 @@ public class Notes {
     private String title;
 
     @ColumnInfo(name = "description")
-    private String description;
+    private final String description;
 
     @ColumnInfo(name = "created_date_time")
-    private String createdDateTime;
+    private final String createdDateTime;
 
     @ColumnInfo(name = "modified_date_time")
-    private String modifiedDateTime;
+    private final String modifiedDateTime;
 
     @TypeConverters(ToListConverter.class)
     @ColumnInfo(name = "item_text")
-    private List<String> itemText;
+    private final List<String> itemText;
 
     @TypeConverters(ToListConverter.class)
     @ColumnInfo(name = "is_checked")
-    private List<Boolean> checkBoxValue;
+    private final List<Boolean> checkBoxValue;
 
     public Notes(String title, String description, String createdDateTime, String modifiedDateTime, List<String> itemText, List<Boolean> checkBoxValue) {
         this.title = title;
@@ -68,40 +68,20 @@ public class Notes {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getCreatedDateTime() {
         return createdDateTime;
-    }
-
-    public void setCreatedDateTime(String dateTime) {
-        this.createdDateTime = dateTime;
     }
 
     public String getModifiedDateTime() {
         return modifiedDateTime;
     }
 
-    public void setModifiedDateTime(String modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
-    }
-
     public List<String> getItemText() {
         return itemText;
     }
 
-    public void setItemText(List<String> itemText) {
-        this.itemText = itemText;
-    }
-
     public List<Boolean> getCheckBoxValue() {
         return checkBoxValue;
-    }
-
-    public void setCheckBoxValue(List<Boolean> checkBoxValue) {
-        this.checkBoxValue = checkBoxValue;
     }
 
     public String getDateTime() {

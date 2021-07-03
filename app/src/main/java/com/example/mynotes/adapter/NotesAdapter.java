@@ -1,17 +1,14 @@
 package com.example.mynotes.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
-import android.widget.Toast;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.example.mynotes.R;
-import com.example.mynotes.activity.MainActivity;
 import com.example.mynotes.databinding.NotesRowBinding;
 import com.example.mynotes.interfaces.RecViewClickInterface;
 import com.example.mynotes.model.Notes;
@@ -20,16 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder> {
 
+    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
     public List<Notes> notes;
     List<Notes> notesList;
-    private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
-
     private final Filter noteFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
@@ -62,6 +59,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     Context ctx;
     RecViewClickInterface clickInterface;
     int textSize = 16;
+    private NotesHolder notesHolder;
 
     public NotesAdapter(Context ctx, List<Notes> notes, RecViewClickInterface clickInterface) {
         this.notes = notes;
@@ -73,11 +71,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
     @NonNull
     @Override
     public NotesAdapter.NotesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new NotesHolder(LayoutInflater.from(ctx).inflate(R.layout.notes_row, null));
+        notesHolder = new NotesHolder(LayoutInflater.from(ctx).inflate(R.layout.notes_row, parent, false));
+        return notesHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotesAdapter.NotesHolder holder, int position) {
+        changeView(holder.getBinding());
         viewBinderHelper.setOpenOnlyOne(true);
         viewBinderHelper.bind(holder.getBinding().swipeLayout, String.valueOf(notes.get(position).get_id()));
         viewBinderHelper.closeLayout(String.valueOf(notes.get(position).get_id()));
@@ -118,6 +118,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
         notifyDataSetChanged();
     }
 
+    public NotesHolder getNotesHolder() {
+        return notesHolder;
+    }
+
+    public void changeView(NotesRowBinding binding) {
+        SharedPreferences preferences = ctx.getSharedPreferences("saveSpanCount", MODE_PRIVATE);
+        int spanCount = preferences.getInt("spanCount", 1);
+        if (spanCount == 2) {
+            binding.crdNotes.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        } else {
+            binding.crdNotes.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+    }
+
     public class NotesHolder extends RecyclerView.ViewHolder {
 
         private final NotesRowBinding binding;
@@ -127,28 +141,15 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesHolder>
             binding = DataBindingUtil.bind(itemView);
 
             assert binding != null;
-            binding.crdNotes.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    //binding.crdNotes.setBackgroundColor(ctx.getResources().getColor(R.color.orange_pink_dark));
-                    clickInterface.setOnItemLongClick();
-                    return true;
-                }
+            binding.crdNotes.setOnLongClickListener(view -> {
+                clickInterface.setOnItemLongClick();
+                return true;
             });
 
-            binding.txtEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickInterface.setOnEditClick(getAdapterPosition(), notes.get(getAdapterPosition()));
-                }
-            });
+            binding.txtEdit.setOnClickListener(view -> clickInterface.setOnEditClick(getAdapterPosition(), notes.get(getAdapterPosition())));
 
-            binding.txtDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickInterface.setOnDeleteClick(getAdapterPosition());
-                }
-            });
+            binding.txtDelete.setOnClickListener(view -> clickInterface.setOnDeleteClick(getAdapterPosition()));
+
         }
 
         public NotesRowBinding getBinding() {
