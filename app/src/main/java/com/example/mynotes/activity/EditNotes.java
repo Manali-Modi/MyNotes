@@ -89,9 +89,15 @@ public class EditNotes extends AppCompatActivity implements ItemClickInterface {
         binding.toolbarAdd.inflateMenu(R.menu.app_menu);
         binding.toolbarAdd.setOnMenuItemClickListener(menuItem -> {
             if (menuItem.getItemId() == R.id.mnu_share) {
+                String value;
+                if (adapter.itemsList == null || adapter.itemsList.size() == 0) {
+                    value = binding.etTitle.getText().toString() + ":\n" + binding.etDesc.getText().toString();
+                } else {
+                    value = binding.etTitle.getText().toString() + ":\n" + adapter.itemsList + "\n" + binding.etDesc.getText().toString();
+                }
                 Intent sendIntent = new Intent(Intent.ACTION_SEND)
                         .setType("text/plain")
-                        .putExtra(Intent.EXTRA_TEXT, oldTitle + ": " + oldDesc)
+                        .putExtra(Intent.EXTRA_TEXT, value)
                         .putExtra(Intent.EXTRA_SUBJECT, "Share Note");
                 startActivity(sendIntent);
             }
